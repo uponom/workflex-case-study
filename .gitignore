@@ -1,0 +1,26 @@
+# Local environments and dependency caches
+.venv/
+.uv-cache/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# PowerShell
+TestResults/
+*.clixml
+
+# Editors and operating systems
+.DS_Store
+.idea/
+.vscode/
+
+# Secrets and local settings
+.env
+.env.*
+!.env.example
