@@ -27,14 +27,17 @@ Work will follow a requirements-first, test-and-validation workflow:
 7. verify the documented workflow from a clean state before submission.
 
 Repository guidance is defined in [AGENTS.md](AGENTS.md). The execution-plan
-standard is defined in [.agent/PLANS.md](.agent/PLANS.md). The task-specific
-plan will be created as `.agent/EXEC_PLAN.md` after the challenge is received.
+standard is defined in [.agent/PLANS.md](.agent/PLANS.md), and the stable
+preparation handoff is recorded in
+[.agent/CASE_CONTEXT.md](.agent/CASE_CONTEXT.md). The task-specific plan will
+be created as `.agent/EXEC_PLAN.md` after the challenge is received.
 
 ## Repository Layout
 
 ```text
 .
 ├── .agent/
+│   ├── CASE_CONTEXT.md          # Stable preparation and submission context
 │   └── PLANS.md                 # Execution-plan requirements
 ├── .gitignore                   # Local and generated file exclusions
 ├── AGENTS.md                    # Durable development and review instructions

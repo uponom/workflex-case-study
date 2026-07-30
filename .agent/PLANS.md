@@ -37,6 +37,7 @@ At completion:
 - Record exact validation commands and concise results.
 - Document remaining limitations and uncertainty.
 - Confirm `README.md` matches the final solution.
+- Complete the submission checklist in `.agent/CASE_CONTEXT.md`.
 - Summarize the outcome and final repository state.
 
 ## Required Sections for `.agent/EXEC_PLAN.md`
@@ -110,6 +111,13 @@ passing.
 
 Summarize what was delivered, what was intentionally omitted, known
 limitations, and whether the repository was pushed successfully.
+
+### Submission Checklist
+
+Track the final clean-state verification, commit and push, private repository
+check, WorkFlex collaborator invitation, and preparation of the repository link
+for the application-email reply. Do not mark an external action complete until
+it has been verified.
 
 ## Suggested Time Budget
 

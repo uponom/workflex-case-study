@@ -10,6 +10,10 @@ The challenge brief is the source of truth. Do not implement behavior that
 conflicts with it, and distinguish explicit requirements from assumptions and
 optional improvements.
 
+Read `.agent/CASE_CONTEXT.md` at the start of a fresh chat. It contains the
+stable challenge logistics, user decisions, verified local tooling, and
+submission requirements established during preparation.
+
 ## Working Directories
 
 - This repository is the submission repository and the working directory for
@@ -23,26 +27,30 @@ optional improvements.
 
 ## Required Workflow
 
-1. Read the complete challenge brief and inspect every supplied file before
+1. Read `.agent/CASE_CONTEXT.md`, `.agent/PLANS.md`, `README.md`, and the current
+   Git status.
+2. Read the complete challenge brief and inspect every supplied file before
    changing the implementation.
-2. Extract explicit requirements, constraints, expected outputs, ambiguities,
+3. Extract explicit requirements, constraints, expected outputs, ambiguities,
    and acceptance criteria.
-3. Compare PowerShell and Python against the actual task. Explain the benefits,
+4. Check the brief for intellectual-property, confidentiality, licensing, and
+   submission terms that may conflict with the prepared repository.
+5. Compare PowerShell and Python against the actual task. Explain the benefits,
    drawbacks, risks, and recommendation to the user. Do not begin implementation
    until the user selects the language.
-4. Create `.agent/EXEC_PLAN.md` using `.agent/PLANS.md`. Keep it current while
+6. Create `.agent/EXEC_PLAN.md` using `.agent/PLANS.md`. Keep it current while
    implementing.
-5. Implement the smallest complete solution in verified milestones. Prefer a
+7. Implement the smallest complete solution in verified milestones. Prefer a
    working vertical slice over broad unfinished scaffolding.
-6. After every milestone, run focused tests for the changed behavior. Then run
+8. After every milestone, run focused tests for the changed behavior. Then run
    all available regression checks before considering the milestone complete.
-7. Review the diff for correctness, security, unnecessary complexity, secrets,
+9. Review the diff for correctness, security, unnecessary complexity, secrets,
    generated files, and stale documentation.
-8. Update `README.md`, `.agent/EXEC_PLAN.md`, and tests whenever behavior,
-   commands, architecture, assumptions, or limitations change.
-9. Before submission, verify the documented setup from a clean state, confirm
-   the repository is self-contained, push `main`, and check the private GitHub
-   repository.
+10. Update `README.md`, `.agent/EXEC_PLAN.md`, and tests whenever behavior,
+    commands, architecture, assumptions, or limitations change.
+11. Before submission, verify the documented setup from a clean state, confirm
+    the repository is self-contained, and complete every item in the submission
+    checklist in `.agent/CASE_CONTEXT.md`.
 
 ## Engineering Standards
 
@@ -120,4 +128,7 @@ The submission is done only when:
   committed;
 - documentation and the execution plan describe the delivered behavior;
 - known limitations and unverified assumptions are explicit; and
-- the final commit is pushed to the verified private GitHub repository.
+- the final commit is pushed to the verified private GitHub repository;
+- `coding-challenge@getworkflex.com` has been added as a collaborator; and
+- the private repository link is ready to send in reply to the application
+  email.
