@@ -29,8 +29,10 @@ submission requirements established during preparation.
 
 1. Read `.agent/CASE_CONTEXT.md`, `.agent/PLANS.md`, `README.md`, and the current
    Git status.
-2. Read the complete challenge brief and inspect every supplied file before
-   changing the implementation.
+2. Locate the original challenge ZIP in the attached definition folder. Inspect
+   its file list for unsafe paths, create `source/`, extract the archive there
+   without modifying the original ZIP, and then read the complete challenge
+   brief and every supplied file before changing the implementation.
 3. Extract explicit requirements, constraints, expected outputs, ambiguities,
    and acceptance criteria.
 4. Check the brief for intellectual-property, confidentiality, licensing, and

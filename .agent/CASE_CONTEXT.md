@@ -32,6 +32,11 @@ overrides any assumption in this file.
 ## Project Folder Roles
 
 - This Git repository contains only the self-contained submission.
+- The user is responsible only for downloading the original ZIP into the
+  attached `workflex-case-study-definition` folder. The user does not need to
+  extract it.
+- Codex must inspect the archive file list for unsafe paths, create `source/`,
+  and extract the archive there without modifying or deleting the original ZIP.
 - The separately attached folder named `workflex-case-study-definition` is for:
   - the original downloaded ZIP, preserved unchanged;
   - `source/`, containing an exact extraction of the ZIP;
