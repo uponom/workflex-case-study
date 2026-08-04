@@ -1,101 +1,230 @@
-# WorkFlex Case Study
+# WorkFlex Monthly Access Review
 
-This private repository is prepared for Yurii Ponomarenko's WorkFlex technical
-case study submission.
+A read-only PowerShell 7 tool for a deterministic monthly review of employee,
+group-membership, privileged-access, and guest CSV exports. It validates the
+source data, applies documented review rules, and generates an actionable
+manager report plus Microsoft Teams message drafts. It never changes access or
+sends messages.
 
-> **Status:** Preparation only. The challenge brief has not yet been received,
-> the implementation language has not been selected, and no solution code has
-> been added.
+The exercise review date is fixed at **2026-08-15**. The supplied data produces
+16 findings: 1 critical, 6 high, 7 medium, and 2 low.
 
-## Overview
+## Run it
 
-The final repository will contain a self-contained solution that a reviewer can
-set up, run, and test from a fresh clone. The implementation will be designed
-after the supplied challenge instructions and input files have been inspected.
+### Prerequisite
 
-## Development Approach
+- PowerShell 7 (tested with 7.6.3)
 
-Work will follow a requirements-first, test-and-validation workflow:
+There are no runtime package dependencies. From the repository root:
 
-1. inspect the complete challenge and derive acceptance criteria;
-2. compare PowerShell and Python for the actual task and obtain the user's
-   language decision;
-3. create and maintain a living execution plan;
-4. implement the solution in small, testable milestones;
-5. run focused tests and full regression checks;
-6. keep this README synchronized with the delivered behavior; and
-7. verify the documented workflow from a clean state before submission.
-
-Repository guidance is defined in [AGENTS.md](AGENTS.md). The execution-plan
-standard is defined in [.agent/PLANS.md](.agent/PLANS.md), and the stable
-preparation handoff is recorded in
-[.agent/CASE_CONTEXT.md](.agent/CASE_CONTEXT.md). The task-specific plan will
-be created as `.agent/EXEC_PLAN.md` after the challenge is received.
-
-## Repository Layout
-
-```text
-.
-├── .agent/
-│   ├── CASE_CONTEXT.md          # Stable preparation and submission context
-│   └── PLANS.md                 # Execution-plan requirements
-├── .gitignore                   # Local and generated file exclusions
-├── AGENTS.md                    # Durable development and review instructions
-├── EVALUATION_PERMISSION.md     # WorkFlex recruitment-evaluation permission
-├── LICENSE                      # PolyForm Noncommercial License 1.0.0
-└── README.md                    # Reviewer-facing project documentation
+```powershell
+pwsh -NoProfile -File ./scripts/Invoke-AccessReview.ps1
 ```
 
-The implementation, test, and configuration directories will be documented
-here after the language and architecture are selected.
+This writes, or deterministically replaces:
 
-## Prerequisites
+- [`output/access-review-2026-08-15.md`](output/access-review-2026-08-15.md) -
+  the non-technical manager report with owners, evidence, actions, and due dates;
+- [`output/teams-messages-2026-08-15.md`](output/teams-messages-2026-08-15.md) -
+  human-reviewed message drafts addressed to the responsible people.
 
-To be defined after the challenge brief and implementation language are
-selected.
+The script resolves its default paths relative to the repository, so it can be
+invoked from another working directory. Paths and date can also be explicit:
 
-## Installation
+```powershell
+pwsh -NoProfile -File ./scripts/Invoke-AccessReview.ps1 `
+  -InputDirectory ./data `
+  -OutputDirectory ./output `
+  -AsOfDate 2026-08-15
+```
 
-To be defined after the project scaffold is created.
+## What it reviews
 
-## Configuration
+The mandatory controls flag:
 
-To be defined after the solution's runtime and external interfaces are known.
-Secrets and machine-specific values will not be committed.
+- privileged accounts whose last sign-in is missing or more than 30 days old;
+- disabled accounts that retain an admin role or privileged-group membership;
+- enabled guests that are expired or expire within 14 days, inclusive.
 
-## Usage
+Additional hygiene controls flag enabled standard accounts with sign-ins older
+than 30 days, enabled guests inactive for more than 90 days, admin roles on an
+external email identity, and disabled accounts left in standard groups.
 
-To be defined with copy-pasteable commands and representative inputs and
-outputs after the core workflow is implemented.
+For this export, an admin role or any `security` group makes an account
+privileged. The exact supplied anomalies and recommendations are in the
+[generated report](output/access-review-2026-08-15.md).
 
-## Testing and Quality Checks
+## Tests and quality checks
 
-To be defined with exact commands for focused tests, the full test suite,
-formatting, linting, static analysis, and an end-to-end smoke test.
+Pester and PSScriptAnalyzer are development-only dependencies. The solution was
+tested with Pester 6.0.1 and PSScriptAnalyzer 1.25.0.
 
-## Architecture and Design Decisions
+```powershell
+# Automated behavior, boundary, validation, and output tests
+pwsh -NoProfile -Command 'Invoke-Pester -Path ./tests -Output Detailed'
 
-To be documented after the challenge requirements are known. The final section
-will explain the component boundaries, data flow, important tradeoffs, and why
-the selected design is appropriate for the scope and time limit.
+# Static analysis; expected result: ISSUES=0
+pwsh -NoProfile -Command '
+  $issues = foreach ($path in @("./src", "./scripts", "./tests")) {
+    Invoke-ScriptAnalyzer -Path $path -Recurse -Severity Error,Warning
+  }
+  $issues | Format-Table
+  "ISSUES=$(@($issues).Count)"
+  if (@($issues).Count -gt 0) { exit 1 }
+'
+```
 
-## Assumptions and Limitations
+The tests cover the exact mandatory findings, the strict `>30`-day sign-in
+boundary, the inclusive 14-day guest-expiry boundary, supplementary controls,
+invalid booleans, broken references, and end-to-end artifact generation.
 
-To be updated throughout implementation. All unverified assumptions, deliberate
-scope reductions, and known limitations will be listed explicitly before
-submission.
+## Design
 
-## Security Considerations
+```text
+CSV files -> strict import and validation -> normalized records
+          -> deterministic review rules -> typed finding records
+          -> manager report + Teams drafts
+```
 
-The solution will apply proportionate input validation, safe error reporting,
-secret handling, least privilege, and dependency minimization based on the
-actual challenge. Specific security decisions and residual risks will be
-documented here.
+[`src/AccessReview.psm1`](src/AccessReview.psm1) separates import, validation,
+finding detection, and Markdown rendering. The thin
+[`scripts/Invoke-AccessReview.ps1`](scripts/Invoke-AccessReview.ps1) entry point
+provides safe defaults and orchestration. The design is intentionally local and
+dependency-free: its rules can be tested without Microsoft Graph or a tenant.
+
+Input validation fails with an actionable error for a missing file or column,
+an empty or duplicate identifier, an invalid ISO date or boolean, an unknown
+group type, an orphaned membership, or an unknown guest sponsor. Findings are
+sorted by severity, type, and stable subject ID so repeated runs are comparable.
+
+## Connecting it to Microsoft Graph
+
+### Authentication model
+
+For a scheduled production job, use **app-only authentication** under a
+dedicated workload identity. In Azure, the preferred deployment is an Azure
+Automation runbook or timer-triggered function with a managed identity. Grant
+only read-only Microsoft Graph application permissions with admin consent. For
+a non-Azure runner, use an app registration with workload identity federation
+or a certificate stored in a managed vault; do not use a client secret in code
+or configuration.
+
+This follows Microsoft's guidance for
+[app-only access](https://learn.microsoft.com/en-us/entra/identity-platform/app-only-access-primer)
+and [certificate credentials](https://learn.microsoft.com/en-us/entra/msidweb/authentication/certificates).
+
+### Permission scopes
+
+| Application permission | Why it is needed |
+|---|---|
+| `User.Read.All` | Read employee and guest profiles, enabled state, department, and sponsor relationships. |
+| `AuditLog.Read.All` | Read `signInActivity`; this property also requires an appropriate Entra ID license. |
+| `GroupMember.Read.All` | Read group metadata and memberships used by the privilege policy. |
+| `RoleManagement.Read.Directory` | Read directory-role definitions and assignments. |
+| `EntitlementManagement.Read.All` | Optional: read access-package assignment schedules when they are the guest-expiry source. |
+
+Microsoft documents these in the
+[Graph permissions reference](https://learn.microsoft.com/en-us/graph/permissions-reference).
+`Member.Read.Hidden` would be added only if a reviewed privileged group has
+hidden membership. The collector should not receive `Directory.ReadWrite.All`,
+role-write, group-write, user-write, or Teams-send permissions.
+
+### Data collection and mapping
+
+The production collector would replace the CSV import while preserving the
+normalized records and review engine:
+
+1. Read users and guests from `/v1.0/users`, selecting `accountEnabled`,
+   `createdDateTime`, `department`, `userType`, and `signInActivity`. Microsoft
+   documents the permission and paging constraints on
+   [List users](https://learn.microsoft.com/en-us/graph/api/user-list?view=graph-rest-1.0).
+2. Read active directory-role assignments from
+   `/v1.0/roleManagement/directory/roleAssignments` and map their role
+   definitions. See
+   [List role assignments](https://learn.microsoft.com/en-us/graph/api/rbacapplication-list-roleassignments?view=graph-rest-1.0).
+3. Read membership only for an approved privileged-group policy or allowlist;
+   unlike this limited CSV, not every security group should be assumed
+   privileged in production.
+4. Resolve each guest's accountable sponsor from the organization's governance
+   source. Guest expiry is not a universal Entra user property: map it from an
+   [access-package assignment schedule](https://learn.microsoft.com/en-us/graph/api/resources/accesspackageassignment?view=graph-rest-1.0)
+   or a governed custom extension, rather than inventing it from account age.
+5. Follow every `@odata.nextLink`, retry `429` and transient `5xx` responses
+   using `Retry-After` with bounded backoff, and write a complete snapshot only
+   after all required queries succeed. A partial snapshot must fail the run.
+
+The Graph adapter should save the same normalized schema to a protected staging
+location and then call the existing rules. This keeps tenant I/O separate from
+policy logic and provides an auditable monthly input snapshot.
+
+## Scheduling and monitoring
+
+Schedule one UTC run per month in Azure Automation (PowerShell 7) using the
+managed identity above. Prevent overlapping runs and key the input snapshot and
+reports by review date, making reruns idempotent. Publish reports to a private,
+retention-controlled SharePoint library or storage account, then open a review
+ticket assigned to IT & Security; do not post the drafts automatically.
+
+Send structured logs to Azure Monitor / Log Analytics with run ID, review date,
+input freshness, source counts, finding counts by severity and type, duration,
+retry count, and output location. Never log tokens or unnecessary personal
+data. Alert IT & Security on:
+
+- failed or incomplete Graph collection, exhausted retries, or stale input;
+- missing output, an unexpectedly empty dataset, or an unexpected zero-finding
+  result;
+- a material month-over-month count change; or
+- a critical finding not acknowledged in the review ticket within its SLA.
+
+Retain run status, input snapshot, report, reviewer decision, approval/ticket
+reference, and eventual remediation evidence for the organization's defined
+audit period.
+
+## Actions that must never be autonomous
+
+The automation may read data, calculate findings, create reports, and prepare
+drafts. It must never autonomously:
+
+- disable or delete a user or guest;
+- remove, add, or time-limit a role or group membership;
+- renew, extend, approve, or revoke guest access;
+- send Teams/email messages or represent a finding as a final decision;
+- dismiss a finding based only on inactivity or missing telemetry; or
+- change the privilege policy, reviewer, owner, or evidence-retention record.
+
+Every access change requires human validation of identity, employment/business
+need, impact, documented approval, and an auditable change workflow. High-risk
+changes should use least privilege, separation of duties, and rollback or
+break-glass procedures outside this reporting tool.
+
+## Assumptions and limitations
+
+- Dates use whole UTC calendar days. A privileged sign-in exactly 30 days old
+  is not stale; a guest expiring exactly 14 days after review is near expiry.
+- A missing privileged sign-in is a finding, not proof that the account was
+  unused; Graph retention, licensing, and workload-account behavior need human
+  interpretation.
+- The supplied inviter is treated as guest sponsor. Employee manager data was
+  absent, so IT & Security or the department manager is the fallback owner.
+- Treating every exported `security` group as privileged is an exercise-only
+  conservative assumption. Production requires a governed privilege policy.
+- The tool produces Markdown and does not call Graph, Teams, a ticketing system,
+  or an access-control API.
+
+## Repository layout
+
+```text
+data/       Reproducible challenge CSV inputs
+output/     Generated manager report and Teams drafts
+scripts/    Reviewer-facing CLI
+src/        Import, validation, review, and rendering module
+tests/      Pester test suite
+.agent/     Execution plan and development context
+```
 
 ## License
 
-The code is licensed under the
-[PolyForm Noncommercial License 1.0.0](LICENSE). WorkFlex receives the
-additional limited rights described in
-[EVALUATION_PERMISSION.md](EVALUATION_PERMISSION.md) solely to evaluate Yurii
-Ponomarenko's candidacy.
+The code is under the [PolyForm Noncommercial License 1.0.0](LICENSE).
+WorkFlex also receives the limited rights in
+[EVALUATION_PERMISSION.md](EVALUATION_PERMISSION.md) to clone, run, test, and
+review it solely for evaluating Yurii Ponomarenko's candidacy.

@@ -6,11 +6,14 @@ overrides any assumption in this file.
 
 ## Current Status
 
-- Preparation is complete; the challenge ZIP has not yet been received.
-- The implementation language and architecture have not been selected.
+- The challenge was supplied as one Markdown file and three CSV files rather
+  than a ZIP; originals were preserved and hash-verified under `source/` in the
+  attached definition folder.
+- PowerShell 7 was selected, and implementation details and live progress are
+  recorded in `.agent/EXEC_PLAN.md`.
 - The submission repository is `uponom/workflex-case-study`.
 - The repository is private, uses `main`, and has an HTTPS `origin`.
-- No implementation code or task-specific execution plan exists yet.
+- The reviewer-facing entry point is `scripts/Invoke-AccessReview.ps1`.
 
 ## Challenge Process and Working Assumptions
 

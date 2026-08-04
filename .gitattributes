@@ -1,0 +1,2 @@
+# Preserve the supplied CSV inputs byte-for-byte, including their CRLF endings.
+data/*.csv binary

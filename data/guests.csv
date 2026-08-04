@@ -1,0 +1,13 @@
+guest_id,display_name,email,company,invited_by_user_id,account_enabled,access_expires_utc,last_sign_in_utc
+G01,Tobias Frank,tobias.frank@auditpartner.example,Extern Audit GmbH,U011,True,2026-12-13,2026-08-10
+G02,Marie Colin,marie.colin@legalfirm.example,Colin & Partner,U020,True,2027-03-03,2026-08-06
+G03,Piotr Zielinski,piotr.zielinski@devshop.example,CodeCraft sp. z o.o.,U007,True,2027-01-12,2026-08-11
+G04,Sarah Klein,sarah.klein@taxadvisor.example,Klein Tax,U038,True,2026-11-13,2026-08-04
+G05,Diego Fuentes,diego.fuentes@translationco.example,LinguaPro SL,U002,True,2026-07-30,2026-07-28
+G06,Ella Virtanen,ella.virtanen@designstudio.example,Studio Pohjola,U020,True,2027-06-11,2026-08-08
+G07,Ahmed Saleh,ahmed.saleh@pentest.example,RedTeam Labs,U037,True,2026-08-22,2026-08-13
+G08,Lucie Bernard,lucie.bernard@recruiter.example,TalentBridge,U025,True,2027-04-12,2026-08-02
+G09,Ken Tanaka,ken.tanaka@integrator.example,APIWorks KK,U026,True,2026-08-27,2026-08-09
+G10,Ana Costa,ana.costa@accountingfirm.example,Costa Accounting,U013,True,2027-02-11,2026-08-07
+G11,Viktor Olsen,viktor.olsen@consultancy.example,NorthStar Consulting,U005,True,2027-07-01,2026-03-11
+G12,Julia Hoff,julia.hoff@insurancepartner.example,SafeCover AG,U038,True,2026-10-14,2026-08-05

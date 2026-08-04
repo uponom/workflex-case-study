@@ -29,10 +29,10 @@ submission requirements established during preparation.
 
 1. Read `.agent/CASE_CONTEXT.md`, `.agent/PLANS.md`, `README.md`, and the current
    Git status.
-2. Locate the original challenge ZIP in the attached definition folder. Inspect
-   its file list for unsafe paths, create `source/`, extract the archive there
-   without modifying the original ZIP, and then read the complete challenge
-   brief and every supplied file before changing the implementation.
+2. Inspect the supplied challenge materials in the attached definition folder,
+   including archive paths when an archive is supplied. Preserve the originals
+   and place verified copies under its `source/` directory before reading the
+   complete brief and every supplied file.
 3. Extract explicit requirements, constraints, expected outputs, ambiguities,
    and acceptance criteria.
 4. Check the brief for intellectual-property, confidentiality, licensing, and
@@ -75,9 +75,35 @@ submission requirements established during preparation.
 
 ## Build and Validation Commands
 
-The implementation language has not been selected because the challenge brief
-has not been received. Replace this section with the exact setup, format, lint,
-static-analysis, test, and run commands immediately after the stack is chosen.
+The implementation targets PowerShell 7 and has no runtime package dependency.
+Run the reviewer workflow from the repository root:
+
+```powershell
+pwsh -NoProfile -File ./scripts/Invoke-AccessReview.ps1
+```
+
+Run the full Pester suite:
+
+```powershell
+pwsh -NoProfile -Command 'Invoke-Pester -Path ./tests -Output Detailed'
+```
+
+Run PSScriptAnalyzer and fail on any warning or error:
+
+```powershell
+pwsh -NoProfile -Command '
+  $issues = foreach ($path in @("./src", "./scripts", "./tests")) {
+    Invoke-ScriptAnalyzer -Path $path -Recurse -Severity Error,Warning
+  }
+  $issues | Format-Table
+  "ISSUES=$(@($issues).Count)"
+  if (@($issues).Count -gt 0) { exit 1 }
+'
+```
+
+Pester 6.0.1 and PSScriptAnalyzer 1.25.0 are development-only dependencies.
+Regenerate committed output whenever review behavior or rendering changes and
+verify that a second run produces no diff.
 
 Every functional change must have proportionate automated coverage where
 practical. Validation should include:

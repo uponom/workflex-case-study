@@ -1,0 +1,74 @@
+user_id,display_name,email,department,admin_roles,account_enabled,last_sign_in_utc,created_utc
+U001,Rosa Kaur,rosa.kaur@helioworks.example,Engineering,,True,2026-08-07,2023-04-30
+U002,Julia Berg,julia.berg@helioworks.example,Sales,,True,2026-07-25,2025-02-05
+U003,Bram Duarte,bram.duarte@helioworks.example,Engineering,,True,2026-08-15,2025-01-09
+U004,Erik Lind,erik.lind@helioworks.example,Leadership,,True,2026-07-27,2025-10-11
+U005,Yusuf Dubois,yusuf.dubois@helioworks.example,Leadership,,True,2026-08-02,2023-08-09
+U006,Ruth Conti,ruth.conti@helioworks.example,Finance,,True,2026-08-15,2024-04-14
+U007,Petra Duarte,petra.duarte@helioworks.example,People & Culture,,True,2026-08-07,2024-05-01
+U008,Erik Sturm,erik.sturm@helioworks.example,People & Culture,,True,2026-08-12,2025-01-13
+U009,Tessa Jensen,tessa.jensen@helioworks.example,People & Culture,,True,2026-08-04,2023-02-09
+U010,Milan Rossi,milan.rossi@helioworks.example,Operations,,True,2026-07-29,2024-09-03
+U011,Emil Sousa,emil.sousa@helioworks.example,Sales,,True,2026-07-29,2022-10-15
+U012,Oscar Nielsen,oscar.nielsen@helioworks.example,People & Culture,,True,2026-07-28,2023-12-02
+U013,Ali Novak,ali.novak@helioworks.example,Engineering,,True,2026-07-25,2023-07-09
+U014,Noel Costa,noel.costa@helioworks.example,Sales,,True,2026-08-08,2024-12-10
+U015,Tessa Nowak,tessa.nowak@helioworks.example,Operations,,True,2026-07-26,2021-12-25
+U016,Lea Kral,lea.kral@helioworks.example,People & Culture,,True,2026-08-09,2023-01-30
+U017,Petra Ott,petra.ott@helioworks.example,Sales,,True,2026-07-27,2024-02-27
+U018,Dana Dahl,dana.dahl@helioworks.example,Compliance Research,,True,2026-08-10,2020-11-21
+U019,Emil Nielsen,emil.nielsen@helioworks.example,Leadership,,True,2026-08-08,2022-06-09
+U020,Oscar Beck,oscar.beck@helioworks.example,Engineering,,True,2026-08-08,2025-09-18
+U021,Milan Larsen,milan.larsen@helioworks.example,Marketing,,True,2026-08-07,2025-05-01
+U022,Erik Kraus,erik.kraus@helioworks.example,People & Culture,,True,2026-08-09,2020-06-23
+U023,Ivo Berge,ivo.berge@helioworks.example,Operations,,True,2026-08-11,2023-02-08
+U024,Carla Moretti,carla.moretti@helioworks.example,Leadership,,True,2026-07-29,2023-02-16
+U025,Sven Conti,sven.conti@helioworks.example,Marketing,,True,2026-07-28,2021-08-06
+U026,Omar Lind,omar.lind@helioworks.example,Customer Success,,True,2026-07-30,2020-07-16
+U027,Pavel Sturm,pavel.sturm@helioworks.example,Engineering,,True,2026-08-12,2024-05-11
+U028,Rosa Fischer,rosa.fischer@helioworks.example,Marketing,,True,2026-07-27,2025-05-12
+U029,Tessa Sousa,tessa.sousa@helioworks.example,Operations,,True,2026-07-30,2023-04-04
+U030,Yusuf Lopes,yusuf.lopes@helioworks.example,Engineering,,True,2026-07-25,2024-10-15
+U031,Jens Berge,jens.berge@helioworks.example,Leadership,,True,2026-08-07,2022-04-05
+U032,Felix Costa,felix.costa@helioworks.example,Marketing,,True,2026-08-10,2020-12-26
+U033,Anna Dahl,anna.dahl@helioworks.example,Finance,,True,2026-07-30,2024-01-27
+U034,Alba Kraus,alba.kraus@helioworks.example,Sales,,True,2026-07-26,2022-09-23
+U035,Alba Wolf,alba.wolf@helioworks.example,Compliance Research,,True,2026-08-11,2021-11-18
+U036,Iris Fischer,iris.fischer@helioworks.example,Leadership,,True,2026-07-30,2026-01-25
+U037,Olga Larsen,olga.larsen@helioworks.example,Operations,,True,2026-08-15,2024-10-26
+U038,Emil Kral,emil.kral@helioworks.example,Finance,,True,2026-08-08,2025-06-04
+U039,Sam Berge,sam.berge@helioworks.example,Sales,,True,2026-08-13,2020-08-16
+U040,Judit Novak,judit.novak@helioworks.example,Leadership,,True,2026-08-11,2024-08-20
+U041,Nadia Andersen,nadia.andersen@helioworks.example,Leadership,,True,2026-08-10,2023-02-07
+U042,Karl Lopes,karl.lopes@helioworks.example,Marketing,,True,2026-08-09,2023-10-27
+U043,Ali Braun,ali.braun@helioworks.example,Marketing,,True,2026-07-25,2021-11-20
+U044,Ruth Riva,ruth.riva@helioworks.example,Leadership,,True,2026-08-01,2024-09-19
+U045,Sam Lind,sam.lind@helioworks.example,Sales,,True,2026-08-05,2025-11-02
+U046,Bram Ramos,bram.ramos@helioworks.example,Compliance Research,,True,2026-07-28,2023-08-09
+U047,Anna Novak,anna.novak@helioworks.example,Engineering,,True,2026-08-08,2025-04-26
+U048,Boris Rossi,boris.rossi@helioworks.example,People & Culture,,True,2026-08-13,2020-04-23
+U049,Sam Nowak,sam.nowak@helioworks.example,Operations,,True,2026-08-09,2024-08-04
+U050,Maja Ott,maja.ott@helioworks.example,Operations,,True,2026-08-08,2020-10-08
+U051,Milan Marino,milan.marino@helioworks.example,Compliance Research,,True,2026-08-12,2024-12-26
+U052,Nadia Duarte,nadia.duarte@helioworks.example,People & Culture,,True,2026-08-02,2021-06-19
+U053,Adam Lopes,adam.lopes@helioworks.example,Engineering,,True,2026-07-25,2024-12-20
+U054,Tom Haas,tom.haas@helioworks.example,People & Culture,,True,2026-08-12,2023-04-15
+U055,Zoe Dubois,zoe.dubois@helioworks.example,Leadership,,True,2026-08-01,2024-07-02
+U056,Marco Santos,marco.santos@helioworks.example,Finance,,True,2026-08-01,2023-04-10
+U057,Rene Ott,rene.ott@helioworks.example,Sales,,True,2026-08-01,2024-12-22
+U058,Tom Szabo,tom.szabo@helioworks.example,Leadership,,True,2026-08-15,2025-01-10
+U059,Emil Sturm,emil.sturm@helioworks.example,Compliance Research,,True,2026-06-29,2024-03-17
+U060,Lena Farkas,lena.farkas@helioworks.example,Operations,,True,2026-06-10,2023-09-05
+U061,Rene Haas,rene.haas@helioworks.example,Engineering,,True,2026-07-07,2024-03-24
+U062,Tessa Meyer,tessa.meyer@helioworks.example,Marketing,,True,2026-05-12,2023-02-06
+U063,Emil Olsen,emil.olsen@helioworks.example,Operations,,False,2026-04-07,2022-11-16
+U064,Marco Benes,marco.benes@helioworks.example,Leadership,,False,2026-01-17,2020-08-13
+U065,Priya Nair,priya.nair@helioworks.example,Engineering,Global Administrator,False,2026-05-03,2021-06-02
+U066,Marek Kowalski,marek.kowalski@helioworks.example,Engineering,Global Administrator,True,2026-06-01,2020-11-14
+U067,Sofia Lindqvist,sofia.lindqvist@helioworks.example,Operations,Intune Administrator,True,2026-06-12,2024-02-27
+U068,Backup Service,svc-backup@helioworks.example,Engineering,Exchange Administrator,True,,2022-10-15
+U069,Jonas Weber,jonas.weber@helioworks.example,Sales,Helpdesk Administrator,True,2026-08-12,2024-06-06
+U070,Elena Petrova,elena.petrova.freelance@gmail.com,Compliance Research,User Administrator,True,2026-08-10,2024-12-23
+U071,Henrik Dahlberg,henrik.dahlberg@helioworks.example,Engineering,Global Administrator,True,2026-08-14,2020-04-28
+U072,Amira Haddad,amira.haddad@helioworks.example,Finance,Billing Administrator,True,2026-08-11,2023-08-11
+U073,Robert Fuchs,robert.fuchs@helioworks.example,Finance,,True,2026-08-13,2023-01-23
