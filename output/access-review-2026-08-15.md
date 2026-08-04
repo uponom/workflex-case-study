@@ -1,16 +1,17 @@
 # Monthly Access Review
 
 - **Review date:** 2026-08-15
-- **Scope:** 73 employees, 192 group memberships, 12 guests
+- **Review status:** Complete - input integrity checks passed
+- **Scope:** 73 employee rows, 192 group membership rows, 12 guest rows
 - **Result:** 16 findings - 1 critical, 6 high, 7 medium, 2 low
 
 ## Executive summary
 
-The review found one disabled Global Administrator that still retains privileged access. This should be remediated immediately. Three additional enabled privileged accounts have stale or missing sign-ins, one enabled guest is already expired, and two guests expire within 14 days. The report also surfaces hygiene issues that should be confirmed during the same review cycle.
+Access checks identified: disabled privileged accounts - 1; privileged accounts with stale or missing sign-ins - 4; expired guests - 1; guests expiring within 14 days - 2. Additional identity-hygiene findings should be confirmed during the same review cycle.
 
 ### Management actions
 
-1. Have IT & Security remove or formally reapprove privileges on the disabled Global Administrator immediately.
+1. Have IT & Security remove or formally reapprove privileges on disabled privileged accounts immediately.
 2. Ask privileged account owners to confirm business need and ownership within three business days.
 3. Ask each guest sponsor to remove or extend access before the stated deadline.
 4. Review the additional stale and identity-hygiene findings before the next monthly review.
@@ -96,7 +97,7 @@ The review found one disabled Global Administrator that still retains privileged
 
 ## Data quality
 
-Input validation passed: required columns were present, identifiers were unique, date and boolean values parsed strictly, and every membership and guest sponsor referenced an existing employee.
+**Passed.** Employee and guest identifiers are unique, every group membership references an existing employee, and every guest inviter exists. Required columns were present and all dates and booleans parsed strictly.
 
 ---
 Generated deterministically by the read-only WorkFlex access-review tool.

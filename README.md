@@ -38,6 +38,12 @@ pwsh -NoProfile -File ./scripts/Invoke-AccessReview.ps1 `
   -AsOfDate 2026-08-15
 ```
 
+Exit code `0` means the review and input integrity checks completed. If one of
+the reportable integrity checks below fails, both artifacts are still written,
+the report status is `Incomplete`, and the CLI exits with code `2`. A structural
+or parsing error that prevents a safe import, such as a missing column or an
+invalid date, terminates with code `1` and an actionable error.
+
 ## What it reviews
 
 The mandatory controls flag:
@@ -53,6 +59,21 @@ external email identity, and disabled accounts left in standard groups.
 For this export, an admin role or any `security` group makes an account
 privileged. The exact supplied anomalies and recommendations are in the
 [generated report](output/access-review-2026-08-15.md).
+
+### Input integrity checks
+
+Before evaluating access, the tool checks that:
+
+- employee `user_id` and guest `guest_id` values are unique;
+- every membership `user_id` references an employee in `users.csv`; and
+- every guest `invited_by_user_id` references an employee in `users.csv`.
+
+Failures become high-severity findings in the manager report and Teams drafts
+for IT & Security. The report explains the affected source, ID, evidence, and
+required correction, and clearly states that the review must be rerun before
+sign-off. Best-effort processing is deterministic: the first row for a
+duplicated ID is used, orphan memberships remain unattached, and a guest with a
+missing inviter is assigned to IT & Security for review.
 
 ## Tests and quality checks
 
@@ -76,7 +97,9 @@ pwsh -NoProfile -Command '
 
 The tests cover the exact mandatory findings, the strict `>30`-day sign-in
 boundary, the inclusive 14-day guest-expiry boundary, supplementary controls,
-invalid booleans, broken references, and end-to-end artifact generation.
+invalid booleans, duplicate employee and guest IDs, orphan memberships,
+missing guest inviters, incomplete-report generation, CLI exit codes, and
+end-to-end artifact generation.
 
 ## Design
 
@@ -92,10 +115,12 @@ finding detection, and Markdown rendering. The thin
 provides safe defaults and orchestration. The design is intentionally local and
 dependency-free: its rules can be tested without Microsoft Graph or a tenant.
 
-Input validation fails with an actionable error for a missing file or column,
-an empty or duplicate identifier, an invalid ISO date or boolean, an unknown
-group type, an orphaned membership, or an unknown guest sponsor. Findings are
-sorted by severity, type, and stable subject ID so repeated runs are comparable.
+Structural validation fails with an actionable error for a missing file or
+column, an empty identifier, an invalid ISO date or boolean, or an unknown group
+type. Duplicate identifiers and broken employee references are reportable data
+quality findings: the tool emits an incomplete best-effort review and returns a
+nonzero status. Findings are sorted by severity, type, and stable subject ID so
+repeated runs are comparable.
 
 ## Connecting it to Microsoft Graph
 
@@ -197,19 +222,29 @@ need, impact, documented approval, and an auditable change workflow. High-risk
 changes should use least privilege, separation of duties, and rollback or
 break-glass procedures outside this reporting tool.
 
-## Assumptions and limitations
+## Review decisions, assumptions, and limitations
 
 - Dates use whole UTC calendar days. A privileged sign-in exactly 30 days old
   is not stale; a guest expiring exactly 14 days after review is near expiry.
+- Active non-privileged employees become stale after more than 30 days without
+  sign-in; enabled guests become stale after more than 90 days.
 - A missing privileged sign-in is a finding, not proof that the account was
   unused; Graph retention, licensing, and workload-account behavior need human
   interpretation.
-- The supplied inviter is treated as guest sponsor. Employee manager data was
-  absent, so IT & Security or the department manager is the fallback owner.
 - Treating every exported `security` group as privileged is an exercise-only
-  conservative assumption. Production requires a governed privilege policy.
-- The tool produces Markdown and does not call Graph, Teams, a ticketing system,
-  or an access-control API.
+  conservative assumption because there is no `is_privileged` field.
+  Production requires an approved allowlist/policy and role-assignable-group
+  metadata rather than a group name or `security` type alone.
+- Employee manager data was not supplied. An active human administrator is
+  asked to confirm their own access; disabled accounts, service accounts,
+  external administrators, and other cases without a reliable owner are routed
+  to IT & Security. Standard stale-account drafts identify the department
+  manager as the business reviewer.
+- `invited_by_user_id` is treated as the guest's accountable sponsor. A missing
+  inviter is a data-quality finding and falls back to IT & Security.
+- Microsoft Teams content is draft-only. The tool does not call Graph, Teams, a
+  ticketing system, or an access-control API; it never sends a message or
+  disables, deletes, assigns, removes, renews, or otherwise changes access.
 
 ## Repository layout
 

@@ -35,6 +35,12 @@ $result = Invoke-AccessReview `
     -OutputDirectory $OutputDirectory
 
 Write-Output "Access review complete for $($result.ReviewDate)."
+Write-Output "Review status: $($result.ReviewStatus)."
 Write-Output "Findings: $($result.FindingCount) ($($result.CriticalCount) critical, $($result.HighCount) high, $($result.MediumCount) medium, $($result.LowCount) low)."
 Write-Output "Report: $($result.ReportPath)"
 Write-Output "Teams drafts: $($result.TeamsMessagesPath)"
+
+if ($result.DataQualityIssueCount -gt 0) {
+    Write-Error "Input data quality issues written to the report: $($result.DataQualityIssueCount). Correct the source data and rerun the review." -ErrorAction Continue
+    exit 2
+}

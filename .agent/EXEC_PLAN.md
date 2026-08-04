@@ -26,8 +26,9 @@ Acceptance is observable when:
   action;
 - additional findings are clearly separated from mandatory controls;
 - all dates and threshold boundaries are deterministic;
-- invalid booleans, dates, duplicate identifiers, or broken references fail
-  with actionable errors;
+- duplicate identifiers, orphan memberships, and missing guest inviters are
+  recorded in an incomplete report and cause a nonzero CLI exit; structural or
+  parsing failures stop with actionable errors;
 - Pester tests cover required findings and important threshold boundaries;
 - PSScriptAnalyzer reports no errors; and
 - setup, tests, and execution work using only files in a fresh clone.
@@ -106,6 +107,8 @@ prepare the repository link for the email reply.
 - [x] 2026-08-04: Add Pester coverage and replace the technical README
   (Milestone 3).
 - [~] 2026-08-04: Perform final verification and submission (Milestone 4).
+- [x] 2026-08-04: Revise data-integrity handling so all three requested checks
+  are visible in incomplete reports and produce a nonzero CLI result.
 
 ## Decision Log
 
@@ -120,6 +123,10 @@ prepare the repository link for the email reply.
 - 2026-08-04: Keep the engine read-only and generate one Teams draft per
   finding. More concise grouping is possible later, but per-finding evidence,
   owner, and requested action are clearer and directly reviewable.
+- 2026-08-04: Report duplicate employee/guest IDs, orphan memberships, and
+  missing guest inviters instead of failing before output. Mark the review
+  incomplete, use deterministic best-effort handling, and return CLI exit code
+  2 so scheduled execution cannot silently pass.
 
 ## Discoveries and Risks
 
@@ -156,25 +163,25 @@ prepare the repository link for the email reply.
 - Commit `6bd49ab` has a verified good SSH signature and was pushed to
   `origin/main`; GitHub reported the repository as private with default branch
   `main`.
+- Revised focused and regression suite: passed, 12 tests, 0 failed. This covers
+  duplicate employee/guest IDs, orphan memberships, missing guest inviters,
+  report content, deterministic fallback ownership, and CLI exit code 2.
+- Revised PSScriptAnalyzer check: passed, `ISSUES=0`.
 
 ## Outcome and Remaining Work
 
-The complete solution and required deliverables are implemented. It detects all
-mandatory anomalies plus four additional hygiene controls, emits the manager
-report and 16 accountable Teams drafts, and documents a read-only Graph
-production architecture. A clean archive of the signed implementation commit
-passed the documented CLI, 9 Pester tests, PSScriptAnalyzer with zero issues,
-and exact committed-output reproduction. The private repository and `main`
-branch were verified and the implementation commit was pushed. Only the
-external collaborator invitation remains.
+The solution is being revised to surface the three requested data-integrity
+checks in an incomplete report rather than stopping before output. Final
+regression, clean-state verification, and publication of this revision remain.
 
 ## Submission Checklist
 
-- [x] Clean-state setup and run verified from `README.md`.
-- [x] All tests and quality checks pass.
-- [x] Final documentation and generated outputs match implementation.
-- [x] Signed implementation commit pushed to `origin/main`.
+- [ ] Revised clean-state setup and run verified from `README.md`.
+- [x] Revised tests and quality checks pass.
+- [x] Final documentation and generated outputs match revised implementation.
+- [ ] Signed revision commit pushed to `origin/main`.
 - [x] GitHub repository verified private with `main` as default branch.
-- [ ] `coding-challenge@getworkflex.com` added as collaborator.
+- [!] `coding-challenge@getworkflex.com` intentionally not invited yet; the
+  user will request this after reviewing the final repository.
 - [x] Private repository link ready for the application-email reply:
   `https://github.com/uponom/workflex-case-study`.

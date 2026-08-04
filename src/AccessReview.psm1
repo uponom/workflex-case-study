@@ -74,7 +74,7 @@ function Assert-RequiredColumnSchema {
     }
 }
 
-function Assert-UniqueIdentifierSet {
+function Get-DuplicateIdentifier {
     param(
         [Parameter(Mandatory)]
         [object[]] $Rows,
@@ -91,14 +91,38 @@ function Assert-UniqueIdentifierSet {
         throw "$SourceName contains a blank $PropertyName."
     }
 
-    $duplicates = @(
+    return @(
         $Rows |
             Group-Object -Property $PropertyName |
             Where-Object Count -gt 1 |
-            Select-Object -ExpandProperty Name
+            Sort-Object Name |
+            ForEach-Object {
+                [pscustomobject]@{
+                    Source = $SourceName
+                    Identifier = $_.Name
+                    Count = $_.Count
+                }
+            }
     )
-    if ($duplicates.Count -gt 0) {
-        throw "$SourceName contains duplicate $PropertyName value(s): $($duplicates -join ', ')."
+}
+
+function ConvertTo-DataQualityIssue {
+    param(
+        [Parameter(Mandatory)] [string] $Code,
+        [Parameter(Mandatory)] [string] $Source,
+        [Parameter(Mandatory)] [string] $SubjectId,
+        [Parameter(Mandatory)] [string] $Summary,
+        [Parameter(Mandatory)] [string] $Evidence,
+        [Parameter(Mandatory)] [string] $RecommendedAction
+    )
+
+    return [pscustomobject]@{
+        Code = $Code
+        Source = $Source
+        SubjectId = $SubjectId
+        Summary = $Summary
+        Evidence = $Evidence
+        RecommendedAction = $RecommendedAction
     }
 }
 
@@ -137,8 +161,21 @@ function Import-AccessReviewData {
         'account_enabled', 'access_expires_utc', 'last_sign_in_utc'
     )
 
-    Assert-UniqueIdentifierSet -Rows $rawUsers -PropertyName 'user_id' -SourceName 'users.csv'
-    Assert-UniqueIdentifierSet -Rows $rawGuests -PropertyName 'guest_id' -SourceName 'guests.csv'
+    $dataQualityIssues = [System.Collections.Generic.List[object]]::new()
+    foreach ($duplicate in @(Get-DuplicateIdentifier -Rows $rawUsers -PropertyName 'user_id' -SourceName 'users.csv')) {
+        $dataQualityIssues.Add((ConvertTo-DataQualityIssue `
+            -Code 'DuplicateUserId' -Source $duplicate.Source -SubjectId $duplicate.Identifier `
+            -Summary 'Duplicate employee identifier' `
+            -Evidence "user_id $($duplicate.Identifier) occurs $($duplicate.Count) times" `
+            -RecommendedAction 'Correct the source export so each employee ID occurs exactly once, then rerun the review.'))
+    }
+    foreach ($duplicate in @(Get-DuplicateIdentifier -Rows $rawGuests -PropertyName 'guest_id' -SourceName 'guests.csv')) {
+        $dataQualityIssues.Add((ConvertTo-DataQualityIssue `
+            -Code 'DuplicateGuestId' -Source $duplicate.Source -SubjectId $duplicate.Identifier `
+            -Summary 'Duplicate guest identifier' `
+            -Evidence "guest_id $($duplicate.Identifier) occurs $($duplicate.Count) times" `
+            -RecommendedAction 'Correct the source export so each guest ID occurs exactly once, then rerun the review.'))
+    }
 
     $users = @(
         foreach ($row in $rawUsers) {
@@ -192,21 +229,43 @@ function Import-AccessReviewData {
         }
     )
 
+    $uniqueUsers = [System.Collections.Generic.List[object]]::new()
     $userById = @{}
     foreach ($user in $users) {
-        $userById[$user.UserId] = $user
+        if (-not $userById.ContainsKey($user.UserId)) {
+            $userById[$user.UserId] = $user
+            $uniqueUsers.Add($user)
+        }
     }
 
     $orphanMemberships = @($memberships | Where-Object { -not $userById.ContainsKey($_.UserId) })
-    if ($orphanMemberships.Count -gt 0) {
-        $ids = @($orphanMemberships.UserId | Sort-Object -Unique)
-        throw "group_memberships.csv references unknown user_id value(s): $($ids -join ', ')."
+    foreach ($orphanGroup in @($orphanMemberships | Group-Object UserId | Sort-Object Name)) {
+        $groupNames = @($orphanGroup.Group | ForEach-Object GroupName | Sort-Object -Unique)
+        $membershipUserId = if ([string]::IsNullOrWhiteSpace($orphanGroup.Name)) { '<blank>' } else { $orphanGroup.Name }
+        $dataQualityIssues.Add((ConvertTo-DataQualityIssue `
+            -Code 'OrphanMembership' -Source 'group_memberships.csv' -SubjectId $membershipUserId `
+            -Summary 'Group membership references an unknown employee' `
+            -Evidence "user_id $membershipUserId has $($orphanGroup.Count) membership row(s): $($groupNames -join ', ')" `
+            -RecommendedAction 'Correct or remove the orphaned membership rows, then rerun the review.'))
     }
 
-    $orphanInviters = @($guests | Where-Object { -not $userById.ContainsKey($_.InvitedByUserId) })
-    if ($orphanInviters.Count -gt 0) {
-        $ids = @($orphanInviters.InvitedByUserId | Sort-Object -Unique)
-        throw "guests.csv references unknown invited_by_user_id value(s): $($ids -join ', ')."
+    $uniqueGuests = [System.Collections.Generic.List[object]]::new()
+    $guestById = @{}
+    foreach ($guest in $guests) {
+        if (-not $guestById.ContainsKey($guest.GuestId)) {
+            $guestById[$guest.GuestId] = $guest
+            $uniqueGuests.Add($guest)
+        }
+    }
+
+    $orphanInviters = @($uniqueGuests | Where-Object { -not $userById.ContainsKey($_.InvitedByUserId) })
+    foreach ($guest in @($orphanInviters | Sort-Object GuestId)) {
+        $inviterUserId = if ([string]::IsNullOrWhiteSpace($guest.InvitedByUserId)) { '<blank>' } else { $guest.InvitedByUserId }
+        $dataQualityIssues.Add((ConvertTo-DataQualityIssue `
+            -Code 'MissingGuestInviter' -Source 'guests.csv' -SubjectId $guest.GuestId `
+            -Summary 'Guest inviter does not exist in the employee export' `
+            -Evidence "guest_id $($guest.GuestId) references invited_by_user_id $inviterUserId" `
+            -RecommendedAction 'Assign a valid accountable sponsor or correct the inviter reference, then rerun the review.'))
     }
 
     $groupsByUser = @{}
@@ -218,11 +277,17 @@ function Import-AccessReviewData {
     }
 
     return [pscustomobject]@{
-        Users = $users
+        Users = @($uniqueUsers)
         Memberships = $memberships
-        Guests = $guests
+        Guests = @($uniqueGuests)
         UserById = $userById
         GroupsByUser = $groupsByUser
+        DataQualityIssues = @($dataQualityIssues)
+        SourceCounts = [pscustomobject]@{
+            Users = $rawUsers.Count
+            Memberships = $rawMemberships.Count
+            Guests = $rawGuests.Count
+        }
     }
 }
 
@@ -282,6 +347,16 @@ function Get-AccessReviewFinding {
 
     $reviewDate = $AsOfDate.Date
     $findings = [System.Collections.Generic.List[object]]::new()
+
+    foreach ($issue in $Data.DataQualityIssues) {
+        $findings.Add((ConvertTo-AccessFinding -Type 'DataQualityIssue' -Severity 'High' `
+            -SubjectId $issue.SubjectId -SubjectName $issue.Source `
+            -ResponsibleName 'IT & Security' `
+            -Summary $issue.Summary `
+            -Evidence "$($issue.Code): $($issue.Evidence)" `
+            -RecommendedAction $issue.RecommendedAction `
+            -Due 'Immediate'))
+    }
 
     foreach ($user in $Data.Users) {
         $userGroups = if ($Data.GroupsByUser.ContainsKey($user.UserId)) {
@@ -368,7 +443,15 @@ function Get-AccessReviewFinding {
     }
 
     foreach ($guest in $Data.Guests) {
-        $sponsor = $Data.UserById[$guest.InvitedByUserId]
+        $sponsor = if ($Data.UserById.ContainsKey($guest.InvitedByUserId)) {
+            $Data.UserById[$guest.InvitedByUserId]
+        }
+        else {
+            [pscustomobject]@{
+                DisplayName = 'IT & Security'
+                Email = ''
+            }
+        }
         $daysToExpiry = ($guest.AccessExpiresUtc.Date - $reviewDate).Days
 
         if ($daysToExpiry -lt 0) {
@@ -424,6 +507,7 @@ function Get-FindingTypeTitle {
     param([Parameter(Mandatory)][string] $Type)
 
     switch ($Type) {
+        'DataQualityIssue' { 'Input data quality issues' }
         'DisabledPrivilegedAccount' { 'Disabled accounts retaining privileges' }
         'StalePrivilegedAccount' { 'Privileged accounts with stale or missing sign-ins' }
         'ExpiredGuest' { 'Expired guest access' }
@@ -450,24 +534,48 @@ function New-AccessReviewReport {
     foreach ($severity in @('Critical', 'High', 'Medium', 'Low')) {
         $severityCounts[$severity] = @($allFindings | Where-Object Severity -eq $severity).Count
     }
+    $dataQualityIssues = @($Data.DataQualityIssues)
+    $reviewStatus = if ($dataQualityIssues.Count -eq 0) {
+        'Complete - input integrity checks passed'
+    }
+    else {
+        "Incomplete - input data quality issues found: $($dataQualityIssues.Count)"
+    }
+
+    $disabledPrivilegedCount = @($allFindings | Where-Object Type -eq 'DisabledPrivilegedAccount').Count
+    $stalePrivilegedCount = @($allFindings | Where-Object Type -eq 'StalePrivilegedAccount').Count
+    $expiredGuestCount = @($allFindings | Where-Object Type -eq 'ExpiredGuest').Count
+    $nearExpiryGuestCount = @($allFindings | Where-Object Type -eq 'GuestNearExpiry').Count
 
     $lines = [System.Collections.Generic.List[string]]::new()
     $lines.Add('# Monthly Access Review')
     $lines.Add('')
     $lines.Add("- **Review date:** $($AsOfDate.ToString('yyyy-MM-dd'))")
-    $lines.Add("- **Scope:** $($Data.Users.Count) employees, $($Data.Memberships.Count) group memberships, $($Data.Guests.Count) guests")
+    $lines.Add("- **Review status:** $reviewStatus")
+    $lines.Add("- **Scope:** $($Data.SourceCounts.Users) employee rows, $($Data.SourceCounts.Memberships) group membership rows, $($Data.SourceCounts.Guests) guest rows")
     $lines.Add("- **Result:** $($allFindings.Count) findings - $($severityCounts.Critical) critical, $($severityCounts.High) high, $($severityCounts.Medium) medium, $($severityCounts.Low) low")
     $lines.Add('')
     $lines.Add('## Executive summary')
     $lines.Add('')
-    $lines.Add('The review found one disabled Global Administrator that still retains privileged access. This should be remediated immediately. Three additional enabled privileged accounts have stale or missing sign-ins, one enabled guest is already expired, and two guests expire within 14 days. The report also surfaces hygiene issues that should be confirmed during the same review cycle.')
+    if ($dataQualityIssues.Count -gt 0) {
+        $lines.Add("The review is incomplete. Input integrity issues found: $($dataQualityIssues.Count). These issues can make ownership or access results ambiguous. The tool performed a deterministic best-effort review, but the source data must be corrected and the review rerun before sign-off.")
+        $lines.Add('')
+    }
+    $lines.Add("Access checks identified: disabled privileged accounts - $disabledPrivilegedCount; privileged accounts with stale or missing sign-ins - $stalePrivilegedCount; expired guests - $expiredGuestCount; guests expiring within 14 days - $nearExpiryGuestCount. Additional identity-hygiene findings should be confirmed during the same review cycle.")
     $lines.Add('')
     $lines.Add('### Management actions')
     $lines.Add('')
-    $lines.Add('1. Have IT & Security remove or formally reapprove privileges on the disabled Global Administrator immediately.')
-    $lines.Add('2. Ask privileged account owners to confirm business need and ownership within three business days.')
-    $lines.Add('3. Ask each guest sponsor to remove or extend access before the stated deadline.')
-    $lines.Add('4. Review the additional stale and identity-hygiene findings before the next monthly review.')
+    $managementActions = [System.Collections.Generic.List[string]]::new()
+    if ($dataQualityIssues.Count -gt 0) {
+        $managementActions.Add('Correct the listed source-data issues and rerun the review before approval; do not treat this run as complete.')
+    }
+    $managementActions.Add('Have IT & Security remove or formally reapprove privileges on disabled privileged accounts immediately.')
+    $managementActions.Add('Ask privileged account owners to confirm business need and ownership within three business days.')
+    $managementActions.Add('Ask each guest sponsor to remove or extend access before the stated deadline.')
+    $managementActions.Add('Review the additional stale and identity-hygiene findings before the next monthly review.')
+    for ($index = 0; $index -lt $managementActions.Count; $index++) {
+        $lines.Add("$($index + 1). $($managementActions[$index])")
+    }
     $lines.Add('')
     $lines.Add('## Immediate and high-priority findings')
     $lines.Add('')
@@ -518,7 +626,18 @@ function New-AccessReviewReport {
     $lines.Add('')
     $lines.Add('## Data quality')
     $lines.Add('')
-    $lines.Add('Input validation passed: required columns were present, identifiers were unique, date and boolean values parsed strictly, and every membership and guest sponsor referenced an existing employee.')
+    if ($dataQualityIssues.Count -eq 0) {
+        $lines.Add('**Passed.** Employee and guest identifiers are unique, every group membership references an existing employee, and every guest inviter exists. Required columns were present and all dates and booleans parsed strictly.')
+    }
+    else {
+        $lines.Add('**Incomplete review.** Correct every issue below and rerun the tool. For deterministic best-effort output, only the first row for a duplicated ID was analyzed, orphaned memberships were not attached to an employee, and guests with a missing inviter were routed to IT & Security.')
+        $lines.Add('')
+        $lines.Add('| Check | Source | Reference | Problem | Required action |')
+        $lines.Add('|---|---|---|---|---|')
+        foreach ($issue in $dataQualityIssues) {
+            $lines.Add("| $(ConvertTo-MarkdownCell $issue.Code) | $(ConvertTo-MarkdownCell $issue.Source) | $(ConvertTo-MarkdownCell $issue.SubjectId) | $(ConvertTo-MarkdownCell $issue.Evidence) | $(ConvertTo-MarkdownCell $issue.RecommendedAction) |")
+        }
+    }
     $lines.Add('')
     $lines.Add('---')
     $lines.Add('Generated deterministically by the read-only WorkFlex access-review tool.')
@@ -563,6 +682,12 @@ function New-TeamsMessageDraft {
         else {
             "Hi $($finding.ResponsibleName)"
         }
+        $responseRequest = if ($finding.Type -eq 'DataQualityIssue') {
+            'Please reply with **corrected** or **investigating**, plus the corrected export or a ticket reference. Access decisions from this run must wait for a clean rerun.'
+        }
+        else {
+            'Please reply with **keep**, **remove**, or **investigating**, plus a ticket or approval reference where applicable. No access will be changed automatically.'
+        }
 
         $lines.Add('')
         $lines.Add("## $index. $(Get-FindingTypeTitle $finding.Type) - $($finding.SubjectName)")
@@ -579,7 +704,7 @@ function New-TeamsMessageDraft {
         $lines.Add('>')
         $lines.Add("> Requested action: $($finding.RecommendedAction) Target: $($finding.Due.ToLowerInvariant()).")
         $lines.Add('>')
-        $lines.Add('> Please reply with **keep**, **remove**, or **investigating**, plus a ticket or approval reference where applicable. No access will be changed automatically.')
+        $lines.Add("> $responseRequest")
         $lines.Add('>')
         $lines.Add('> Thank you.')
     }
@@ -619,6 +744,8 @@ function Invoke-AccessReview {
         HighCount = @($findings | Where-Object Severity -eq 'High').Count
         MediumCount = @($findings | Where-Object Severity -eq 'Medium').Count
         LowCount = @($findings | Where-Object Severity -eq 'Low').Count
+        DataQualityIssueCount = $data.DataQualityIssues.Count
+        ReviewStatus = if ($data.DataQualityIssues.Count -eq 0) { 'Complete' } else { 'Incomplete' }
         ReportPath = (Resolve-Path -LiteralPath $reportPath).Path
         TeamsMessagesPath = (Resolve-Path -LiteralPath $messagesPath).Path
     }

@@ -128,9 +128,10 @@ Before declaring the case study complete:
 5. Commit and push the final state to `origin/main`.
 6. Verify the repository remains private and the remote branch contains the
    final commit.
-7. Add `coding-challenge@getworkflex.com` as a repository collaborator.
+7. Add `coding-challenge@getworkflex.com` as a repository collaborator only
+   after the user explicitly confirms that repository review is complete. The
+   invitation is currently deferred by the user.
 8. Reply to the application email with the private repository link so WorkFlex
    can match the submission to the application.
 
-Do not add the WorkFlex collaborator before the final submitted state is ready
-unless the user explicitly asks to do so.
+Do not add the WorkFlex collaborator until the user explicitly asks to do so.
