@@ -168,6 +168,12 @@ Describe 'Get-AccessReviewFinding' {
         )
         $stalePrivileged | Should -Be @('U065', 'U066', 'U067', 'U068')
 
+        $stalePrivilegedFindings = @(
+            $reviewFindings | Where-Object Type -eq 'StalePrivilegedAccount'
+        )
+        @($stalePrivilegedFindings.ResponsibleName | Sort-Object -Unique) | Should -Be @('IT & Security')
+        @($stalePrivilegedFindings.ResponsibleEmail | Where-Object { $_ }).Count | Should -Be 0
+
         $disabledPrivileged = @(
             $reviewFindings |
                 Where-Object Type -eq 'DisabledPrivilegedAccount' |
@@ -221,6 +227,8 @@ Describe 'Invoke-AccessReview' {
         $report | Should -Match 'Employee and guest identifiers are unique'
         $messages | Should -Match 'No access will be changed automatically'
         $messages | Should -Match 'Julia Berg'
+        $messages | Should -Not -Match '\*\*To:\*\* Marek Kowalski'
+        $messages | Should -Not -Match '\*\*To:\*\* Sofia Lindqvist'
     }
 }
 

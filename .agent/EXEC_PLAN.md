@@ -127,6 +127,9 @@ prepare the repository link for the email reply.
   missing guest inviters instead of failing before output. Mark the review
   incomplete, use deterministic best-effort handling, and return CLI exit code
   2 so scheduled execution cannot silently pass.
+- 2026-08-04: Route every stale or missing-sign-in privileged-account finding
+  to IT & Security. Independent review avoids asking privileged users to attest
+  their own access; IT & Security may contact the account owner for evidence.
 
 ## Discoveries and Risks
 

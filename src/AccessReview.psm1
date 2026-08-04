@@ -384,16 +384,12 @@ function Get-AccessReviewFinding {
                 else {
                     "Last sign-in $($user.LastSignInUtc.ToString('yyyy-MM-dd')) ($daysSinceSignIn days ago)"
                 }
-                $ownerIsUser = $user.AccountEnabled -and $user.DisplayName -notmatch '(?i)service' -and $user.Email -notmatch '(?i)^svc-'
-                $responsibleName = if ($ownerIsUser) { $user.DisplayName } else { 'IT & Security' }
-                $responsibleEmail = if ($ownerIsUser) { $user.Email } else { '' }
-
                 $findings.Add((ConvertTo-AccessFinding -Type 'StalePrivilegedAccount' -Severity 'High' `
                     -SubjectId $user.UserId -SubjectName $user.DisplayName -SubjectEmail $user.Email `
-                    -ResponsibleName $responsibleName -ResponsibleEmail $responsibleEmail `
+                    -ResponsibleName 'IT & Security' `
                     -Summary 'Privileged account has stale or missing sign-in activity' `
                     -Evidence "$signInEvidence; privilege: $($privilegeLabels -join ', ')" `
-                    -RecommendedAction 'Confirm the named owner and business need; remove or time-bound privileges that are no longer required.' `
+                    -RecommendedAction 'Independently confirm the account owner and business need; remove or time-bound privileges that are no longer required.' `
                     -Due 'Within 3 business days'))
             }
 
@@ -621,7 +617,8 @@ function New-AccessReviewReport {
     $lines.Add('- Privileged sign-in is stale only when it is more than 30 days old; exactly 30 days is not stale.')
     $lines.Add('- Guest expiry is near when it falls from the review date through 14 days after it, inclusive.')
     $lines.Add('- Additional hygiene controls flag enabled standard users after 30 days and enabled guests after 90 days without sign-in.')
-    $lines.Add('- The inviter is the guest sponsor. Employee manager relationships were not supplied, so IT & Security is the fallback owner.')
+    $lines.Add('- All privileged-account findings go to IT & Security for independent review; privileged users do not attest their own access.')
+    $lines.Add('- The inviter is the guest sponsor. Employee manager relationships were not supplied, so standard stale-account drafts identify the department manager and IT & Security is the fallback owner.')
     $lines.Add('- All findings are recommendations for human review. This tool changes no identity, role, group, guest, or Teams resource.')
     $lines.Add('')
     $lines.Add('## Data quality')

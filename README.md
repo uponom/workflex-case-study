@@ -235,11 +235,12 @@ break-glass procedures outside this reporting tool.
   conservative assumption because there is no `is_privileged` field.
   Production requires an approved allowlist/policy and role-assignable-group
   metadata rather than a group name or `security` type alone.
-- Employee manager data was not supplied. An active human administrator is
-  asked to confirm their own access; disabled accounts, service accounts,
-  external administrators, and other cases without a reliable owner are routed
-  to IT & Security. Standard stale-account drafts identify the department
-  manager as the business reviewer.
+- Employee manager data was not supplied. All privileged-account findings are
+  routed to IT & Security for independent review, including findings for active
+  human administrators; the subject must not self-attest their privileged
+  access. IT & Security can contact the account owner for evidence. Standard
+  stale-account drafts identify the department manager as the business
+  reviewer.
 - `invited_by_user_id` is treated as the guest's accountable sponsor. A missing
   inviter is a data-quality finding and falls back to IT & Security.
 - Microsoft Teams content is draft-only. The tool does not call Graph, Teams, a

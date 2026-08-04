@@ -70,7 +70,7 @@ These are human-reviewed drafts only. The tool does not send messages or change 
 >
 > Evidence: Last sign-in 2026-05-03 (104 days ago); privilege: Global Administrator, SEC-PrivilegedAccess, PROD-Admins.
 >
-> Requested action: Confirm the named owner and business need; remove or time-bound privileges that are no longer required. Target: within 3 business days.
+> Requested action: Independently confirm the account owner and business need; remove or time-bound privileges that are no longer required. Target: within 3 business days.
 >
 > Please reply with **keep**, **remove**, or **investigating**, plus a ticket or approval reference where applicable. No access will be changed automatically.
 >
@@ -78,17 +78,17 @@ These are human-reviewed drafts only. The tool does not send messages or change 
 
 ## 5. Privileged accounts with stale or missing sign-ins - Marek Kowalski
 
-**To:** Marek Kowalski <marek.kowalski@helioworks.example>
+**To:** IT & Security
 
 **Severity:** High
 
-> Hi Marek Kowalski,
+> Hi IT & Security team,
 >
 > Our monthly access review found that **Marek Kowalski** (U066) needs attention: privileged account has stale or missing sign-in activity.
 >
 > Evidence: Last sign-in 2026-06-01 (75 days ago); privilege: Global Administrator, SEC-PrivilegedAccess.
 >
-> Requested action: Confirm the named owner and business need; remove or time-bound privileges that are no longer required. Target: within 3 business days.
+> Requested action: Independently confirm the account owner and business need; remove or time-bound privileges that are no longer required. Target: within 3 business days.
 >
 > Please reply with **keep**, **remove**, or **investigating**, plus a ticket or approval reference where applicable. No access will be changed automatically.
 >
@@ -96,17 +96,17 @@ These are human-reviewed drafts only. The tool does not send messages or change 
 
 ## 6. Privileged accounts with stale or missing sign-ins - Sofia Lindqvist
 
-**To:** Sofia Lindqvist <sofia.lindqvist@helioworks.example>
+**To:** IT & Security
 
 **Severity:** High
 
-> Hi Sofia Lindqvist,
+> Hi IT & Security team,
 >
 > Our monthly access review found that **Sofia Lindqvist** (U067) needs attention: privileged account has stale or missing sign-in activity.
 >
 > Evidence: Last sign-in 2026-06-12 (64 days ago); privilege: Intune Administrator.
 >
-> Requested action: Confirm the named owner and business need; remove or time-bound privileges that are no longer required. Target: within 3 business days.
+> Requested action: Independently confirm the account owner and business need; remove or time-bound privileges that are no longer required. Target: within 3 business days.
 >
 > Please reply with **keep**, **remove**, or **investigating**, plus a ticket or approval reference where applicable. No access will be changed automatically.
 >
@@ -124,7 +124,7 @@ These are human-reviewed drafts only. The tool does not send messages or change 
 >
 > Evidence: No sign-in is recorded; privilege: Exchange Administrator.
 >
-> Requested action: Confirm the named owner and business need; remove or time-bound privileges that are no longer required. Target: within 3 business days.
+> Requested action: Independently confirm the account owner and business need; remove or time-bound privileges that are no longer required. Target: within 3 business days.
 >
 > Please reply with **keep**, **remove**, or **investigating**, plus a ticket or approval reference where applicable. No access will be changed automatically.
 >

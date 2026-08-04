@@ -24,8 +24,8 @@ Access checks identified: disabled privileged accounts - 1; privileged accounts 
 | High | Diego Fuentes (G05) | Enabled guest access is past its expiry date | Expired 16 days ago on 2026-07-30; company: LinguaPro SL | Julia Berg | Immediate |
 | High | Elena Petrova (U070) | Administrative role is assigned to an external email identity | Email elena.petrova.freelance@gmail.com; role: User Administrator | IT & Security | Within 3 business days |
 | High | Priya Nair (U065) | Privileged account has stale or missing sign-in activity | Last sign-in 2026-05-03 (104 days ago); privilege: Global Administrator, SEC-PrivilegedAccess, PROD-Admins | IT & Security | Within 3 business days |
-| High | Marek Kowalski (U066) | Privileged account has stale or missing sign-in activity | Last sign-in 2026-06-01 (75 days ago); privilege: Global Administrator, SEC-PrivilegedAccess | Marek Kowalski | Within 3 business days |
-| High | Sofia Lindqvist (U067) | Privileged account has stale or missing sign-in activity | Last sign-in 2026-06-12 (64 days ago); privilege: Intune Administrator | Sofia Lindqvist | Within 3 business days |
+| High | Marek Kowalski (U066) | Privileged account has stale or missing sign-in activity | Last sign-in 2026-06-01 (75 days ago); privilege: Global Administrator, SEC-PrivilegedAccess | IT & Security | Within 3 business days |
+| High | Sofia Lindqvist (U067) | Privileged account has stale or missing sign-in activity | Last sign-in 2026-06-12 (64 days ago); privilege: Intune Administrator | IT & Security | Within 3 business days |
 | High | Backup Service (U068) | Privileged account has stale or missing sign-in activity | No sign-in is recorded; privilege: Exchange Administrator | IT & Security | Within 3 business days |
 
 ## Detailed findings
@@ -40,10 +40,10 @@ Access checks identified: disabled privileged accounts - 1; privileged accounts 
 
 | Severity | Subject | Evidence | Responsible | Recommended action | Due |
 |---|---|---|---|---|---|
-| High | Priya Nair (U065) | Last sign-in 2026-05-03 (104 days ago); privilege: Global Administrator, SEC-PrivilegedAccess, PROD-Admins | IT & Security | Confirm the named owner and business need; remove or time-bound privileges that are no longer required. | Within 3 business days |
-| High | Marek Kowalski (U066) | Last sign-in 2026-06-01 (75 days ago); privilege: Global Administrator, SEC-PrivilegedAccess | Marek Kowalski | Confirm the named owner and business need; remove or time-bound privileges that are no longer required. | Within 3 business days |
-| High | Sofia Lindqvist (U067) | Last sign-in 2026-06-12 (64 days ago); privilege: Intune Administrator | Sofia Lindqvist | Confirm the named owner and business need; remove or time-bound privileges that are no longer required. | Within 3 business days |
-| High | Backup Service (U068) | No sign-in is recorded; privilege: Exchange Administrator | IT & Security | Confirm the named owner and business need; remove or time-bound privileges that are no longer required. | Within 3 business days |
+| High | Priya Nair (U065) | Last sign-in 2026-05-03 (104 days ago); privilege: Global Administrator, SEC-PrivilegedAccess, PROD-Admins | IT & Security | Independently confirm the account owner and business need; remove or time-bound privileges that are no longer required. | Within 3 business days |
+| High | Marek Kowalski (U066) | Last sign-in 2026-06-01 (75 days ago); privilege: Global Administrator, SEC-PrivilegedAccess | IT & Security | Independently confirm the account owner and business need; remove or time-bound privileges that are no longer required. | Within 3 business days |
+| High | Sofia Lindqvist (U067) | Last sign-in 2026-06-12 (64 days ago); privilege: Intune Administrator | IT & Security | Independently confirm the account owner and business need; remove or time-bound privileges that are no longer required. | Within 3 business days |
+| High | Backup Service (U068) | No sign-in is recorded; privilege: Exchange Administrator | IT & Security | Independently confirm the account owner and business need; remove or time-bound privileges that are no longer required. | Within 3 business days |
 
 ### Expired guest access (1)
 
@@ -92,7 +92,8 @@ Access checks identified: disabled privileged accounts - 1; privileged accounts 
 - Privileged sign-in is stale only when it is more than 30 days old; exactly 30 days is not stale.
 - Guest expiry is near when it falls from the review date through 14 days after it, inclusive.
 - Additional hygiene controls flag enabled standard users after 30 days and enabled guests after 90 days without sign-in.
-- The inviter is the guest sponsor. Employee manager relationships were not supplied, so IT & Security is the fallback owner.
+- All privileged-account findings go to IT & Security for independent review; privileged users do not attest their own access.
+- The inviter is the guest sponsor. Employee manager relationships were not supplied, so standard stale-account drafts identify the department manager and IT & Security is the fallback owner.
 - All findings are recommendations for human review. This tool changes no identity, role, group, guest, or Teams resource.
 
 ## Data quality
