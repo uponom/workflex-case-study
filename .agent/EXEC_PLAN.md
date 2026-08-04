@@ -106,7 +106,8 @@ prepare the repository link for the email reply.
 - [x] 2026-08-04: Implement CLI and both generated artifacts (Milestone 2).
 - [x] 2026-08-04: Add Pester coverage and replace the technical README
   (Milestone 3).
-- [~] 2026-08-04: Perform final verification and submission (Milestone 4).
+- [x] 2026-08-04: Complete final verification and repository submission
+  preparation (Milestone 4).
 - [x] 2026-08-04: Revise data-integrity handling so all three requested checks
   are visible in incomplete reports and produce a nonzero CLI result.
 
@@ -177,6 +178,9 @@ prepare the repository link for the email reply.
 - A clean archive of ownership-policy commit `f0b654e` reproduced both outputs,
   passed all 12 tests, and returned zero PSScriptAnalyzer issues. The commit was
   pushed to `origin/main`.
+- GitHub API verified pending invitation `327982454` for resolved account
+  `WorkFlex-Coding-Challenge`, sent by `uponom` with `write` permission; the
+  invitation is not expired.
 
 ## Outcome and Remaining Work
 
@@ -185,10 +189,11 @@ failed control produces a high-severity finding, an `Incomplete` report, an IT
 & Security message draft, deterministic best-effort results, and CLI exit code
 2. README documents these behaviors and all agreed review assumptions. The
 revision passed regression, static analysis, deterministic clean-state
-reproduction, signed commit, and push. Repository review and the explicitly
-deferred collaborator invitation remain external steps. All privileged-account
-findings now go to IT & Security for independent review rather than to the
-subject of the finding.
+reproduction, signed commit, and push. All privileged-account findings go to IT
+& Security for independent review rather than to the subject of the finding.
+The WorkFlex collaborator invitation is pending acceptance. The remaining
+external step is for the applicant to reply to the application email with the
+private repository link.
 
 ## Submission Checklist
 
@@ -197,7 +202,7 @@ subject of the finding.
 - [x] Final documentation and generated outputs match revised implementation.
 - [x] Signed revision commit pushed to `origin/main`.
 - [x] GitHub repository verified private with `main` as default branch.
-- [!] `coding-challenge@getworkflex.com` intentionally not invited yet; the
-  user will request this after reviewing the final repository.
+- [x] `coding-challenge@getworkflex.com` invited; GitHub resolved the recipient
+  as `WorkFlex-Coding-Challenge` and reports a valid pending invitation.
 - [x] Private repository link ready for the application-email reply:
   `https://github.com/uponom/workflex-case-study`.

@@ -157,7 +157,7 @@ The submission is done only when:
 - documentation and the execution plan describe the delivered behavior;
 - known limitations and unverified assumptions are explicit; and
 - the final commit is pushed to the verified private GitHub repository;
-- `coding-challenge@getworkflex.com` has been added as a collaborator after the
-  user explicitly approves that final external step (currently deferred); and
+- `coding-challenge@getworkflex.com` has been invited as a collaborator after
+  the user explicitly approved that final external step; and
 - the private repository link is ready to send in reply to the application
   email.
