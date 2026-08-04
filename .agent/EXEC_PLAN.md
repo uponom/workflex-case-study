@@ -150,22 +150,31 @@ prepare the repository link for the email reply.
 - Two consecutive CLI runs produced identical SHA-256 hashes for both output
   files: passed.
 - Credential and machine-specific-path scan returned no matches: passed.
-- Clean-state reproduction and final Git checks: pending.
+- A clean `git archive` of commit `6bd49ab` passed the CLI, reproduced both
+  committed outputs exactly, passed all 9 tests, and returned zero static-
+  analysis issues.
+- Commit `6bd49ab` has a verified good SSH signature and was pushed to
+  `origin/main`; GitHub reported the repository as private with default branch
+  `main`.
 
 ## Outcome and Remaining Work
 
-The complete local solution and required deliverables are implemented. It
-detects all mandatory anomalies plus four additional hygiene controls, emits
-the manager report and 16 accountable Teams drafts, and documents a read-only
-Graph production architecture. Final clean-state verification and GitHub
-submission remain.
+The complete solution and required deliverables are implemented. It detects all
+mandatory anomalies plus four additional hygiene controls, emits the manager
+report and 16 accountable Teams drafts, and documents a read-only Graph
+production architecture. A clean archive of the signed implementation commit
+passed the documented CLI, 9 Pester tests, PSScriptAnalyzer with zero issues,
+and exact committed-output reproduction. The private repository and `main`
+branch were verified and the implementation commit was pushed. Only the
+external collaborator invitation remains.
 
 ## Submission Checklist
 
-- [ ] Clean-state setup and run verified from `README.md`.
-- [ ] All tests and quality checks pass.
-- [ ] Final documentation and generated outputs match implementation.
-- [ ] Signed commits pushed to `origin/main`.
-- [ ] GitHub repository verified private and synchronized.
+- [x] Clean-state setup and run verified from `README.md`.
+- [x] All tests and quality checks pass.
+- [x] Final documentation and generated outputs match implementation.
+- [x] Signed implementation commit pushed to `origin/main`.
+- [x] GitHub repository verified private with `main` as default branch.
 - [ ] `coding-challenge@getworkflex.com` added as collaborator.
-- [ ] Private repository link ready for the application-email reply.
+- [x] Private repository link ready for the application-email reply:
+  `https://github.com/uponom/workflex-case-study`.
