@@ -174,6 +174,9 @@ prepare the repository link for the email reply.
   reproduced both committed reports exactly, passed all 12 tests, and returned
   zero static-analysis issues.
 - Signed revision commit `645e95b` was pushed to `origin/main`.
+- A clean archive of ownership-policy commit `f0b654e` reproduced both outputs,
+  passed all 12 tests, and returned zero PSScriptAnalyzer issues. The commit was
+  pushed to `origin/main`.
 
 ## Outcome and Remaining Work
 
@@ -183,7 +186,9 @@ failed control produces a high-severity finding, an `Incomplete` report, an IT
 2. README documents these behaviors and all agreed review assumptions. The
 revision passed regression, static analysis, deterministic clean-state
 reproduction, signed commit, and push. Repository review and the explicitly
-deferred collaborator invitation remain external steps.
+deferred collaborator invitation remain external steps. All privileged-account
+findings now go to IT & Security for independent review rather than to the
+subject of the finding.
 
 ## Submission Checklist
 
