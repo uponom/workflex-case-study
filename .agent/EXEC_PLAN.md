@@ -167,19 +167,27 @@ prepare the repository link for the email reply.
   duplicate employee/guest IDs, orphan memberships, missing guest inviters,
   report content, deterministic fallback ownership, and CLI exit code 2.
 - Revised PSScriptAnalyzer check: passed, `ISSUES=0`.
+- A clean `git archive` of revision commit `645e95b` passed the README CLI,
+  reproduced both committed reports exactly, passed all 12 tests, and returned
+  zero static-analysis issues.
+- Signed revision commit `645e95b` was pushed to `origin/main`.
 
 ## Outcome and Remaining Work
 
-The solution is being revised to surface the three requested data-integrity
-checks in an incomplete report rather than stopping before output. Final
-regression, clean-state verification, and publication of this revision remain.
+The revised solution reports all three requested data-integrity controls. A
+failed control produces a high-severity finding, an `Incomplete` report, an IT
+& Security message draft, deterministic best-effort results, and CLI exit code
+2. README documents these behaviors and all agreed review assumptions. The
+revision passed regression, static analysis, deterministic clean-state
+reproduction, signed commit, and push. Repository review and the explicitly
+deferred collaborator invitation remain external steps.
 
 ## Submission Checklist
 
-- [ ] Revised clean-state setup and run verified from `README.md`.
+- [x] Revised clean-state setup and run verified from `README.md`.
 - [x] Revised tests and quality checks pass.
 - [x] Final documentation and generated outputs match revised implementation.
-- [ ] Signed revision commit pushed to `origin/main`.
+- [x] Signed revision commit pushed to `origin/main`.
 - [x] GitHub repository verified private with `main` as default branch.
 - [!] `coding-challenge@getworkflex.com` intentionally not invited yet; the
   user will request this after reviewing the final repository.
